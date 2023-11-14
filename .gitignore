@@ -1,6 +1,4 @@
 twitter-datasets/
-vocab_cut.txt
-vocab_full.txt
 vocab.pkl
 cooc.pkl
 
