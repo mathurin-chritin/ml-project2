@@ -1,3 +1,10 @@
+twitter-datasets/
+vocab_cut.txt
+vocab_full.txt
+vocab.pkl
+cooc.pkl
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
