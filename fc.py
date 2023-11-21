@@ -18,19 +18,15 @@ class fCNN(nn.Module):
 
         
     def forward(self, x):
-        print("x.ini", x.shape)
-        x = self.flatten(x)
         x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)
         x = self.softmax(x)
-        #return x.flatten()
         return x
 
 
 def train_loop(X_train, epochs, learning_rate, model, l, y_train):
     pred_train=[]
-    X_train_float=X_train.to(torch.float32)
     N=X_train.shape[0]
     o=torch.optim.Adam(model.parameters(), lr=learning_rate)
     # initialize an empty dictionary
@@ -43,7 +39,7 @@ def train_loop(X_train, epochs, learning_rate, model, l, y_train):
             outputs = model(X_train_float[i])  
             pred_train.append(outputs)
             o.zero_grad() # setting gradient to zeros, bc I don't wanna accumulate the grads of all layers
-            loss = l(outputs, y_train) 
+            loss = l(outputs, y_train[i]) 
             loss.backward() # backward propagation        
             o.step() # update the gradient to new gradients
             running_loss += loss.item()
@@ -65,14 +61,16 @@ y_test['label'] = y_test['label'].map({-1: (0, 1), 1: (1, 0)})
 
 X_train_torch=torch.tensor(X_train.values)
 X_test_torch=torch.tensor(X_test.values)
+X_train_float=X_train_torch.to(torch.float32)
+X_test_float=X_test_torch.to(torch.float32)
 
 y_train_torch=torch.tensor(y_train['label'].values.tolist(), dtype=torch.float32)
 y_test_torch=torch.tensor(y_test['label'].values.tolist(), dtype=torch.float32)
 
 
 output_size=2
-p=20
-model=fCNN(X_train_torch.shape[0],p,output_size)
+p=16
+model=fCNN(X_train_torch.shape[1],p,output_size)
 params_fc1=model.fc1.weight
 params_fc2=model.fc2.weight
 l= torch.nn.CrossEntropyLoss()
@@ -81,7 +79,7 @@ learning_rate = np.logspace(-4,-3, 4)
 
 plt.figure(figsize=(8, 6))
 for lr in learning_rate:
-    x=train_loop(X_train_torch, epochs, lr, model, l, y_train_torch)[0]
+    x=train_loop(X_train_float, epochs, lr, model, l, y_train_torch)[0]
     plt.plot(np.arange(0,epochs,1),x, label=f'Learning rate = {lr}')
 plt.xlabel('Iteration')
 plt.ylabel('Error')
@@ -104,4 +102,4 @@ def test_loop(X_test,y_test, l, model):
         test_loss = test_loss/nb_test
     return test_loss, pred_test
 
-y_pred=test_loop(X_test, y_test, l, model)[1]
+y_pred=test_loop(X_test_float, y_test_torch, l, model)[1]
