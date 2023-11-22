@@ -102,6 +102,11 @@ df_train = df_train.sample(n=df_train.shape[0], random_state=RANDOM_SEED)
 X = df_train[df_train.columns[:-1]]
 y = df_train[df_train.columns[-1]]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=RANDOM_SEED)
+X_train.to_csv("X_train.csv", index=False)
+X_test.to_csv("X_test.csv", index=False)
+y_train.to_csv("y_train.csv", index=False)
+y_test.to_csv("y_test.csv", index=False)
+
 
 # %%
 linear = LinearRegression(copy_X=True)
