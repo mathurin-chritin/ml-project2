@@ -8,11 +8,11 @@ from sklearn.linear_model import RidgeClassifier, SGDClassifier, LinearRegressio
 from sklearn.metrics import f1_score
 
 
-EMBEDDINGS = "embeddings.txt"
-VOCAB = "vocab.txt"
+EMBEDDINGS = "embeddings_stemmed.txt"
+VOCAB = "vocab_stemmed.txt"
 
-POS_TWEETS = "twitter-datasets/train_pos.txt"
-NEG_TWEETS = "twitter-datasets/train_neg.txt"
+POS_TWEETS = "twitter-datasets/train_pos_stemmed.txt"
+NEG_TWEETS = "twitter-datasets/train_neg_stemmed.txt"
 TEST_DATA = "twitter-datasets/test_data.txt"
 
 # parse embeddings
@@ -121,7 +121,7 @@ y_pred = sgd.predict(X_test)
 print(f1_score(y_test, y_pred))
 
 # %%
-logistic = LogisticRegression(penalty='l2', random_state=RANDOM_SEED+4, max_iter=100)
+logistic = LogisticRegression(penalty='l2', random_state=RANDOM_SEED+2, max_iter=100)
 logistic.fit(X_train, y_train)
 y_pred = logistic.predict(X_test)
 print(f1_score(y_test, y_pred))
