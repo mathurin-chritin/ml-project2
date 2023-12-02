@@ -2,14 +2,14 @@ import torch
 import numpy as np
 import torch.nn as nn
 import matplotlib.pyplot as plt
-import fc
+import loops
 import pandas as pd
 
 
 class CNN(nn.Module):
     def __init__(self, input_size, hidden_size, hidden_size1, hidden_size2, kernel_size, output_size):
         super(CNN, self).__init__()
-        self.pool_kernel_size = input_size*2
+        self.pool_kernel_size = 20*2
         self.pool_stride = 20
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=hidden_size, kernel_size=kernel_size, stride=1, padding=0)#(d - kernel_size + 1) / 1 = (10000 - 3 + 1) / 1 = 9999
         output1=(input_size-kernel_size+1)/1
@@ -21,7 +21,7 @@ class CNN(nn.Module):
         self.relu2 = nn.ReLU()
         self.pool2 = nn.MaxPool2d(kernel_size=self.pool_kernel_size, stride=self.pool_stride)
         output4=(output3-self.pool_kernel_size+1)/self.pool_stride
-        self.fc1 = nn.Linear(int(output4)**2, hidden_size2)
+        self.fc1 = nn.Linear(int(output4), hidden_size2)
         self.relu3 = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size2, output_size)
 
@@ -40,19 +40,32 @@ class CNN(nn.Module):
     
 #lire data avec padding
 
-X_train=pd.read_csv("X_train_cnn.csv")
-X_test=pd.read_csv("X_test_cnn.csv")
+X_train=pd.read_csv("X_train_cnn_new.csv", skiprows=1)
+X_test=pd.read_csv("X_test_cnn_new.csv", skiprows = 1)
 
-y_train=pd.read_csv("y_train_cnn.csv")
+y_train=pd.read_csv("y_train_cnn_new.csv")
 y_train['label'] = y_train['label'].map({-1: (0, 1), 1: (1, 0)})
 
-y_test=pd.read_csv("y_test_cnn.csv")
+y_test=pd.read_csv("y_test_cnn_new.csv")
 y_test['label'] = y_test['label'].map({-1: (0, 1), 1: (1, 0)})
 
 X_train_torch=torch.tensor(X_train.values)
 X_test_torch=torch.tensor(X_test.values)
 X_train_float=X_train_torch.to(torch.float32)
 X_test_float=X_test_torch.to(torch.float32)
+
+
+# #Exctract numerical values, bc dataframe weird
+# #numeric_columns = X_train.select_dtypes(include=['float64', 'float32', 'float16', 'int64', 'int32', 'int16', 'int8', 'uint8', 'bool']).columns
+# X_train_numeric = X_train[numeric_columns].values 
+# X_train_torch = torch.tensor(X_train_numeric, dtype=torch.float32)
+# X_train_float=X_train_torch.to(torch.float32)
+
+
+# X_test_numeric = X_test[numeric_columns].values
+# X_test_torch = torch.tensor(X_test_numeric, dtype=torch.float32)
+# X_test_float=X_test_torch.to(torch.float32)
+
 
 y_train_torch=torch.tensor(y_train['label'].values.tolist(), dtype=torch.float32)
 y_test_torch=torch.tensor(y_test['label'].values.tolist(), dtype=torch.float32)
@@ -79,13 +92,13 @@ model = CNN(input_size=max_tweet,
         output_size=output_size)
 
 
-epochs=1
-learning_rate = np.logspace(-4,-3, 4)
+epochs=2
+learning_rate = np.logspace(-4,-3, 2)
 l= torch.nn.CrossEntropyLoss()
 
 plt.figure(figsize=(8, 6))
 for lr in learning_rate:
-    x=fc.train_loop(X_train_float, epochs, lr, model, l, y_train_torch)[0]
+    x=loops.train_loop(X_train_float, epochs, lr, model, l, y_train_torch)[0]
     plt.plot(np.arange(0,epochs,1),x, label=f'Learning rate = {lr}')
 plt.xlabel('Iteration')
 plt.ylabel('Error')
@@ -94,4 +107,4 @@ plt.grid(True)
 plt.legend(loc='upper right', title='train loop', fontsize='medium')
 plt.show()
 
-y_pred1=fc.test_loop(X_test, y_test, l, model)[1]
+y_pred1=loops.test_loop(X_test, y_test, l, model)[1]
