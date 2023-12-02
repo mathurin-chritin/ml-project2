@@ -14,7 +14,7 @@ class fCNN(nn.Module):
             self.fc1 = nn.Linear(input_size, hidden_size)
             self.relu = nn.ReLU()
             self.fc2 = nn.Linear(hidden_size, output_size)
-            self.softmax=nn.Softmax()
+            self.softmax=nn.Softmax(dim= 0)
 
         
     def forward(self, x):
@@ -36,7 +36,7 @@ def train_loop(X_train, epochs, learning_rate, model, l, y_train):
         running_loss=0
         for i in range(N):
 
-            outputs = model(X_train_float[i])  
+            outputs = model(X_train[i])  
             pred_train.append(outputs)
             o.zero_grad() # setting gradient to zeros, bc I don't wanna accumulate the grads of all layers
             loss = l(outputs, y_train[i]) 
@@ -74,7 +74,7 @@ model=fCNN(X_train_torch.shape[1],p,output_size)
 params_fc1=model.fc1.weight
 params_fc2=model.fc2.weight
 l= torch.nn.CrossEntropyLoss()
-epochs=50
+epochs=1
 learning_rate = np.logspace(-4,-3, 4)
 
 plt.figure(figsize=(8, 6))
@@ -85,7 +85,7 @@ plt.xlabel('Iteration')
 plt.ylabel('Error')
 plt.title('Train Error')
 plt.grid(True)
-plt.legend(loc='upper right', title='Légende', fontsize='medium')
+plt.legend(loc='upper right', title='train loop', fontsize='medium')
 plt.show()
 
 def test_loop(X_test,y_test, l, model):
