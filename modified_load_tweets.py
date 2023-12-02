@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import random
 import pandas as pd
@@ -5,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import torch
 import math
 
-
+#%%
 # lire données 
 
 EMBEDDINGS = "embeddings_stemmed.txt"
@@ -34,14 +35,14 @@ for w, v in vecs.items():
     embeddings[vocab[w], :] = v
 
 with open(NEG_TWEETS, "r") as f:
-    n_tweets = [line.rstrip().split() for line in f]
+    n_tweets = [line.rstrip().split() for line in f][:100]
 with open(POS_TWEETS, "r") as f:
-    p_tweets = [line.rstrip().split() for line in f]
+    p_tweets = [line.rstrip().split() for line in f][:100]
 
 # Stack the two lists together (will be used to see max_length of tweet)
 combined_tweets = n_tweets + p_tweets
 
-
+#%%
 
 
 testing_tweets = []
@@ -56,6 +57,7 @@ with open(TEST_DATA, "r") as f:
 # convert a tweet to an embedding of shape (max_length,) which is the length of maximal tweet, so added padding
 series_train=[]
 series_test=[]
+length_list=[]
 def modified_load_tweets(tweets_list, series, max_tweet_length, label=None ):
     print("Loading tweets...")
     i = 0
@@ -66,27 +68,32 @@ def modified_load_tweets(tweets_list, series, max_tweet_length, label=None ):
             print(f"{i}/{tot} ({int(i/tot*100)} %)")
 
         
-        
+       
         embeddings_list = [embeddings[vocab.get(word)] for word in tweet if word in vocab.keys()] # have embedding of each word of tweet
+        embeddings_list_torch = torch.FloatTensor(embeddings_list)
         length_tweet=len(embeddings_list)
+        length_list.append(length_tweet)
+        
+        
         diff_length=abs(length_tweet-max_tweet_length)
         
-        tweet_embeddings = np.zeros((max_tweet_length, len(vecs[list(vecs.keys())[0]]))) # to have all tweets of shape (#tweets, max_tweet_len, 20)
-        
-        if len(embeddings_list) > 0:
-           # tweet_embeddings[:len(embeddings_list), :] = np.array(embeddings_list)[:max_tweet_length, :]
+        if len(embeddings_list) == 0:
+            torch.zeros((max_tweet_length, len(vecs[list(vecs.keys())[0]])))
+        else:
+           tweet_mean = torch.mean(embeddings_list_torch, axis=0)
+           tweet_embeddings = torch.ones((max_tweet_length, len(vecs[list(vecs.keys())[0]])))*tweet_mean # to have all tweets of shape (#tweets, max_tweet_len, 20)
+
            if (diff_length%2==0):
-               tweet_embeddings[int(diff_length/2):int(max_tweet_length-diff_length/2),:] = np.array(embeddings_list) #putting them in the middle to do some kind of padding
+               tweet_embeddings[int(diff_length/2):int(max_tweet_length-diff_length/2),:] = embeddings_list_torch #putting them in the middle to do some kind of padding
            else:
-               tweet_embeddings[math.floor(diff_length/2):(max_tweet_length-math.ceil(diff_length/2)),:] = np.array(embeddings_list)
-        serie_dict = {f'f{x+1}': data for x, data in enumerate(tweet_embeddings)}
+               tweet_embeddings[math.floor(diff_length/2):(max_tweet_length-math.ceil(diff_length/2)),:] = embeddings_list_torch
         if label is not None:
-            serie_dict['label'] = label
-        series.append(pd.Series(serie_dict))
+            tweet_embeddings = torch.vstack((tweet_embeddings,label*torch.ones(20,)))
+        series.append(tweet_embeddings)
         i += 1
     
     return series
-
+#%%
 max_length_train = max(len(tweet) for tweet in combined_tweets)
 max_length_test = max(len(tweet) for tweet in testing_tweets)
 max_tot=max(max_length_train,max_length_test)
@@ -99,24 +106,24 @@ series_train = modified_load_tweets(n_tweets, series_train, max_tot, -1)
 
 # no label since this is the prediction set
 series_test = modified_load_tweets(testing_tweets, series_test, max_tot)
+#%%
 
 
-# use DataFrames to represent data
-print("Creating DataFrame...")
-df_train = pd.DataFrame(series_train)
-
-df_test = pd.DataFrame(series_test)
-df_test["index"] = testing_tweets_ids
-df_test.set_index(['index'], inplace=True) # keep indexes as in the input file
-
-
-
+#use torch to represent data
+torch_series_train = torch.stack(series_train)
+torch_series_test = torch.stack(series_test)
+X = torch_series_train[:,:-1]
+y = torch_series_train[:,-1]
 RANDOM_SEED = 1234
 
-X = df_train[df_train.columns[:-1]]
-y = df_train[df_train.columns[-1]]
+X_flattened = X.view(X.size(0), -1)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=RANDOM_SEED)
-X_train.to_csv("X_train_cnn.csv", index=False)
-X_test.to_csv("X_test_cnn.csv", index=False)
-y_train.to_csv("y_train_cnn.csv", index=False)
-y_test.to_csv("y_test_cnn.csv", index=False)
+X_train = X_train.view(X_train.size(0), max_tot, 20)
+X_test = X_test.view(X_test.size(0), max_tot, 20)
+torch.save(X_train, 'X_train_cnn_new.pt')
+torch.save(X_test, 'X_test_cnn_new.pt')
+torch.save(y_train, 'y_train_cnn_new.pt')
+torch.save(y_test, 'y_test_cnn_new.pt')
+
+
+# %%
