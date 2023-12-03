@@ -5,23 +5,23 @@ import pandas as pd
 
 def train_loop(X_train, epochs, learning_rate, model, l, y_train):
     pred_train=[]
-    N=X_train.shape[0]
+    Nb_tweets=X_train.shape[0]
     o=torch.optim.Adam(model.parameters(), lr=learning_rate)
     # initialize an empty dictionary
     res = {'epoch': [], 'train_loss': []}
     for e in range(epochs):
         print(f"Epoch {e+1}\n-------------------------------")
         running_loss=0
-        for i in range(N):
+        for i in range(Nb_tweets):
 
             outputs = model(X_train[i])  
             pred_train.append(outputs)
             o.zero_grad() # setting gradient to zeros, bc I don't wanna accumulate the grads of all layers
-            loss = l(outputs, y_train[i]) 
+            loss = l(outputs, y_train[i].unsqueeze(0).float()) 
             loss.backward() # backward propagation        
             o.step() # update the gradient to new gradients
             running_loss += loss.item()
-        running_loss=running_loss/N
+        running_loss=running_loss/Nb_tweets
         res['epoch'].append(e) # populate the dictionary of results
         res['train_loss'].append(running_loss)
     print("Done!")
