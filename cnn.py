@@ -32,19 +32,21 @@ class CNN(nn.Module):
         self.fc1 = nn.Linear(int(output4)*hidden_size1, hidden_size2)
         self.relu3 = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size2, output_size)
+        self.softmax=nn.Softmax(dim= 0)
 
     def forward(self, x):
-        x = x.view(1,-1)
-        x = self.conv1(x)
+        x = x.view(1,-1)#1,980
+        x = self.conv1(x) #12,48
         x = self.relu1(x)
-        x = self.pool1(x)
-        x = self.conv2(x)
+        x = self.pool1(x)#12,46
+        x = self.conv2(x)#1,47
         x = self.relu2(x)
-        x = self.pool2(x)
-        x = x.view(x.size(0), -1)
-        x = self.fc1(x)
+        x = self.pool2(x)#1,46
+        x = x.view(x.size(0),-1)
+        x = self.fc1(x)#1,16
         x = self.relu3(x)
         x = self.fc2(x)
+        x = self.softmax(x)
         return x
     
 #lire data avec padding
@@ -54,12 +56,12 @@ X_test =  torch.load("X_test_cnn_new.pt")
 
 y_train=torch.load("y_train_cnn_new.pt")
 #one hot encoded
-y_train_labels = torch.tensor([(-1, 1) if label == -1 else (1, 0) for label in y_train[:,0]])
+y_train_labels = torch.tensor([(0, 1) if label == -1 else (1, 0) for label in y_train[:,0]])
 
-y_test=torch.load("y_train_cnn_new.pt")
-y_test_labels = torch.tensor([(-1, 1) if label == -1 else (1, 0) for label in y_test[:,0]])
+y_test=torch.load("y_test_cnn_new.pt")
+y_test_labels = torch.tensor([(0, 1) if label == -1 else (1, 0) for label in y_test[:,0]])
 
-
+X_T = torch.load("X_T.pt")
 
 
 
@@ -72,7 +74,7 @@ hidden_size = 12
 hidden_size1 = 1  #sinon ça collait pas dans train_loop pour le batch_size
 hidden_size2 = 16  
 kernel_size = nb_features*2
-output_size = 2 
+output_size = 2
 
 
 model = CNN(input_size=(1,max_tweet,nb_features), 
@@ -96,6 +98,12 @@ plt.ylabel('Error')
 plt.title('Train Error')
 plt.grid(True)
 plt.legend(loc='upper right', title='train loop', fontsize='medium')
-plt.show()
+plt.savefig('myplot.png')
 
-y_pred1=loops.test_loop(X_test, y_test_labels, l, model)[1]
+
+test_loss, y_pred1=loops.test_loop(X_test, y_test_labels, l, model)
+print("test_loss", test_loss)
+print("y_pred1", y_pred1)
+
+
+y_pred_final = loops.test_loop_final(X_T, model)
