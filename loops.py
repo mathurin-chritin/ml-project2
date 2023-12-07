@@ -35,10 +35,21 @@ def test_loop(X_test,y_test, l, model):
     test_loss=0
     with torch.no_grad():
         # loop over all test input-output pairs
-        for _ in range(nb_test): 
-            outputs = model(X_test)  
+        for i in range(nb_test): 
+            outputs = model(X_test[i])  
             pred_test.append(outputs)
-            loss = l(outputs, y_test) # compute the loss
+            loss = l(outputs, y_test[i].unsqueeze(0).float()) # compute the loss
             test_loss += loss.item()
         test_loss = test_loss/nb_test
     return test_loss, pred_test
+
+def test_loop_final(X_test, model):
+    pred_test=[]
+    nb_test=X_test.shape[0]
+    test_loss=0
+    with torch.no_grad():
+        # loop over all test input-output pairs
+        for i in range(nb_test): 
+            outputs = model(X_test[i])  
+            pred_test.append(outputs)
+    return pred_test
