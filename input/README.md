@@ -15,4 +15,11 @@ input/cnn/
 ├── y_test_cnn_new_{0-15}_full.pt
 └── y_train_cnn_new_{0-15}_full.pt
 ```
-
+For the fully connected the subfolder holding the preprocessed data is available in this link[https://drive.google.com/file/d/1gO1ez3z78aEwszjmFUeyGa7y6nKScoxc/view?usp=sharing], running the notebook fully_connected.ipynb will also create the .csv necessary files but this would take long time. The cell where this files are created is clearly stated.
+```bash
+input/fc/
+├── xtestpred.csv   
+├── X_test.csb
+├── X_train.csv
+├── y_test.csv
+└── y_train.csv
