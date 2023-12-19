@@ -1,7 +1,11 @@
 twitter-datasets/
+tweet_embeddings/glove
+tweet_embeddings/*.txt
 vocab.pkl
 cooc.pkl
 *.csv
+*.pt
+predictions/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
