@@ -1,0 +1,25 @@
+filename=/content/drive/MyDrive/Colab Notebooks/batches/small/submissions/predictions_cnn_alldata_2048_15blocs_BCE.csv
+== TRAINING STATS ==
+number of epochs done = 3
+number of blocs processed per epoch = 15
+= loss stats =
+final loss at end of training = 0.3885917365550995
+best loss on all training = 0.34979134798049927
+= accuracy stats =
+final accuracy at end of training = 0.8178589548452562
+best accuracy on all training = 0.84619140625
+best f1 score on validation set = 0.8322978969708663
+== PARAMS ==
+N_FEATURES = 20
+BATCH_SIZE = 2048
+epochs = 3
+loss type = BCEWithLogitsLoss()
+dropout = 0.25
+hidden_size = 64
+hidden_size1 = 32
+hidden_size2 = 16
+kernel_size = 60
+output_size = 1
+OPTIMIZER PARAMS
+learning_rate = 0.001
+weight_decay = 1e-05
