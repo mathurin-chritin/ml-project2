@@ -2,7 +2,17 @@
 
 The present embeddings have been generated using [GloVe](https://nlp.stanford.edu/projects/glove/).
 
-Follow this procedure to generate them from the original dataset located in `../twitter-dataset.zip` :
+Either download and unzip our pre-generated embeddings or follow this procedure to generate them from the original dataset located in `../twitter-dataset.zip`.
+
+### **[Option A]** Download and unzip our pre-generated embeddings
+
+Download the embeddings file [here](https://drive.google.com/file/d/125JnVGbswXK64zdh0o-wGoipAu8Jzk1_/view?usp=drive_link) and uzip it :
+
+```bash
+cd tweet_embeddings && unzip pregenerated-embeddings.zip .
+```
+
+### **[Option B]** Generate the embeddings from scratch
 
 1. Download the GloVe processor and copy the required file in the directory :
 
