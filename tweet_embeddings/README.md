@@ -37,14 +37,14 @@ Then, concatenate each of the set (`.txt`, `_stemmed.txt`, `_lemmatized.txt`) in
 
 ```bash
 
-cat "twitter-datasets/train_neg_full.txt" "twitter-datasets/train_pos_full.txt" > "twitter-datasets/glove/all_tweets_full.txt"
-cat twitter-datasets/test_data.txt | cut -d , -f 2 >> "twitter-datasets/glove/all_tweets_full.txt"
+cat "../twitter-datasets/train_neg_full.txt" "../twitter-datasets/train_pos_full.txt" > ".glove/all_tweets_full.txt"
+cat ../twitter-datasets/test_data.txt | cut -d , -f 2 >> "glove/all_tweets_full.txt"
 
-cat "twitter-datasets/train_neg_full_stemmed.txt" "twitter-datasets/train_pos_full_stemmed.txt" > "twitter-datasets/glove/all_tweets_full_stemmed.txt"
-cat twitter-datasets/test_data_stemmed.txt | cut -d , -f 2 >> "twitter-datasets/glove/all_tweets_full_stemmed.txt"
+cat "../twitter-datasets/train_neg_full_stemmed.txt" "../twitter-datasets/train_pos_full_stemmed.txt" > "glove/all_tweets_full_stemmed.txt"
+cat ../twitter-datasets/test_data_stemmed.txt | cut -d , -f 2 >> "glove/all_tweets_full_stemmed.txt"
 
-cat "twitter-datasets/train_neg_full_lemmatized.txt" "twitter-datasets/train_pos_full_lemmatized.txt" > "twitter-datasets/glove/all_tweets_full_lemmatized.txt"
-cat twitter-datasets/test_data_lemmatized.txt | cut -d , -f 2 >> "twitter-datasets/glove/all_tweets_full_lemmatized.txt"
+cat "../twitter-datasets/train_neg_full_lemmatized.txt" "../twitter-datasets/train_pos_full_lemmatized.txt" > "glove/all_tweets_full_lemmatized.txt"
+cat ../twitter-datasets/test_data_lemmatized.txt | cut -d , -f 2 >> "glove/all_tweets_full_lemmatized.txt"
 
 ```
 3. Finally, build the embeddings for each separate set :

@@ -8,6 +8,17 @@
 
 This repository holds the code for model on the Tweet Classification problem.
 
+### Requirements
+
+You need the following requirements to run this project :
+ - Scikit-learn (https://scikit-learn.org/stable/)
+ - PyTorch (https://pytorch.org/)
+ - Numpy (https://numpy.org/)
+ - Pandas (https://pandas.pydata.org/)
+ - NLTK (https://www.nltk.org/)
+ - Matplotlib (https://matplotlib.org/)
+
+
 ### Task Introduction
 
 The task of this competition is to predict if a tweet message used to contain a positive :) or negative :( smiley, by considering only the remaining text.
